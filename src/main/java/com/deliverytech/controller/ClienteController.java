@@ -4,15 +4,14 @@ import com.deliverytech.dto.request.ClienteRequest;
 import com.deliverytech.dto.response.ClienteResponse;
 import com.deliverytech.model.Cliente;
 import com.deliverytech.service.ClienteService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -41,19 +40,10 @@ public class ClienteController {
     }
 
     @GetMapping
-    public List<ClienteResponse> listar() {
-        logger.info("Listando todos os clientes ativos");
-        return clienteService.listarAtivos().stream()
-                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
-                .collect(Collectors.toList());
-    }
-    @GetMapping("/clientes") // Mapeia a URL http://localhost:8080/clientes
-    public List<ClienteResponse> listarClientesNoEndpointSimples() {
-        logger.info("Acessando o endpoint simplificado /clientes");
-
-        return clienteService.listarAtivos().stream()
-                .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
-                .collect(Collectors.toList());
+    public Page<ClienteResponse> listar(Pageable pageable) {
+        logger.info("Listando todos os clientes ativos de forma paginada");
+        Page<Cliente> clientesPaginados = clienteService.listarAtivos(pageable);
+        return clientesPaginados.map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()));
     }
 
     @GetMapping("/{id}")
