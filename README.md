@@ -80,7 +80,3 @@ docker-compose up --build
 
 
 ---
-
-## 📬 Contato
-
-[Seu Email] - [LinkedIn] - [GitHub]
