@@ -2,6 +2,7 @@ package com.deliverytech.controller;
 
 import com.deliverytech.dto.request.ClienteRequest;
 import com.deliverytech.dto.response.ClienteResponse;
+import com.deliverytech.exception.EntityNotFoundException;
 import com.deliverytech.model.Cliente;
 import com.deliverytech.service.ClienteService;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class ClienteController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
-
     private final ClienteService clienteService;
 
     @PostMapping
@@ -33,10 +36,15 @@ public class ClienteController {
                 .build();
 
         Cliente salvo = clienteService.cadastrar(cliente);
-
         logger.debug("Cliente salvo com ID {}", salvo.getId());
 
-        return ResponseEntity.ok(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
+        // Retorna 201 Crearted com a localização do novo recurso no header
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(salvo.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
     @GetMapping
@@ -46,16 +54,14 @@ public class ClienteController {
         return clientesPaginados.map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()));
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> buscar(@PathVariable Long id) {
         logger.info("Buscando cliente com ID: {}", id);
         return clienteService.buscarPorId(id)
                 .map(c -> new ClienteResponse(c.getId(), c.getNome(), c.getEmail(), c.getAtivo()))
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    logger.warn("Cliente com ID {} não encontrado", id);
-                    return ResponseEntity.notFound().build();
-                });
+                .orElseThrow(() -> new EntityNotFoundException("Cliente", id));
     }
 
     @PutMapping("/{id}")
@@ -68,7 +74,6 @@ public class ClienteController {
                 .build();
 
         Cliente salvo = clienteService.atualizar(id, atualizado);
-
         return ResponseEntity.ok(new ClienteResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(), salvo.getAtivo()));
     }
 
@@ -77,13 +82,5 @@ public class ClienteController {
         logger.info("Alterando status do cliente ID: {}", id);
         clienteService.ativarDesativar(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/status")
-    public ResponseEntity<String> status() {
-        logger.debug("Status endpoint acessado");
-        int cpuCores = Runtime.getRuntime().availableProcessors();
-        logger.info("CPU cores disponíveis: {}", cpuCores);
-        return ResponseEntity.ok("API está online");
     }
 }
