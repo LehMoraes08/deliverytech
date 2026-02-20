@@ -1,10 +1,55 @@
-# 📦 DeliveryTech API
-
+#   DeliveryTech API
 API RESTful desenvolvida com Spring Boot 3 e Java 21 para gerenciar um sistema de delivery completo. Este projeto simula as funcionalidades principais de plataformas como iFood e Uber Eats, incluindo autenticação JWT, cache, monitoramento, CI/CD e muito mais.
+
+##Como Rodar o Projeto?
 
 ---
 
-## 🚀 Funcionalidades
+### Pré-requisitos
+
+- Java JDK 21
+- Maven 3.8+
+- Git
+- Docker e Docker Compose (opcional, para execução containerizada)
+- Redis (para cache, caso rode fora do Docker)
+
+### Instalação e Execução
+
+1º Clone o repositório:
+```bash
+gitclone https://github.com/LehMoraes08/deliverytech
+cd deliverytech
+```
+
+2º Instale as partes:
+```bash
+mvn clean install
+```
+
+3º Execute o projeto (via Maven ou via Docker):
+
+###  Via Maven
+```bash
+git clone https://github.com/seuusuario/delivery-api.git
+cd delivery-api
+./mvnw spring-boot:run
+```
+
+###  Via Docker
+
+```bash
+docker-compose up --build
+```
+
+---
+
+A documentação completa da API está disponível via Swagger UI. Acesse:
+```bash
+http://localhost:8080/swagger-ui.html
+```
+
+
+## Funcionalidades
 
 - Cadastro e login de usuários com JWT
 - Controle de acesso por perfis (CLIENTE, RESTAURANTE, ADMIN, ENTREGADOR)
@@ -21,7 +66,8 @@ API RESTful desenvolvida com Spring Boot 3 e Java 21 para gerenciar um sistema d
 
 ---
 
-## 🧪 Tecnologias Utilizadas
+
+## Tecnologias Utilizadas
 
 - Java 21
 - Spring Boot 3.2.x
@@ -35,48 +81,20 @@ API RESTful desenvolvida com Spring Boot 3 e Java 21 para gerenciar um sistema d
 
 ---
 
-## 📄 Documentação da API
+### Principais fluxos:
 
-Acesse via Swagger:
+**Autenticação e Autorização:** Registro, login com geração de JWT e autorização baseada em roles.
 
-```
-http://localhost:8080/swagger-ui.html
-```
+**Fluxo de Pedidos:** Cliente faz o pedido, restaurante recebe e processa, atualização de status e entrega ao cliente.
 
----
+**Gestão de Restaurante:** Cadastro de produtos, gerenciamento de cardápio e controle de pedidos.
 
-## ⚙️ Como Rodar o Projeto
 
-### 🔧 Pré-requisitos
-
-- Java 21
-- Maven
-- Docker e Docker Compose (opcional)
-
-### 🖥️ Via Maven
-
-```bash
-git clone https://github.com/seuusuario/delivery-api.git
-cd delivery-api
-./mvnw spring-boot:run
-```
-
-### 🐳 Via Docker
-
-```bash
-docker-compose up --build
-```
-
----
-
-## 🧪 Endpoints de Teste
+## Endpoints de Teste
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/clientes`
 - `POST /api/pedidos`
-
----
-
 
 ---
